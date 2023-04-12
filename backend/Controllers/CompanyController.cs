@@ -5,6 +5,7 @@ using backend.Core.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace backend.Controllers
 {
@@ -37,8 +38,8 @@ namespace backend.Controllers
 		[Route("get")]
 		public async Task<ActionResult<IEnumerable<CompanyGetDto>>> GetCompanies()
 		{
-			var companies = _context.Companies.ToListAsync();
-			var convertedCompanies = _mapper.Map<CompanyGetDto>(companies);
+			var companies = await _context.Companies.ToListAsync();
+			var convertedCompanies = _mapper.Map<IEnumerable<CompanyGetDto>>(companies);
 
 			return Ok(convertedCompanies);
 		}
