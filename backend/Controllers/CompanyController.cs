@@ -43,5 +43,11 @@ namespace backend.Controllers
 
 			return Ok(convertedCompanies);
 		}
+
+		// get company by id
+
+		// update company by id
+
+		// delete company by id
 	}
 }
