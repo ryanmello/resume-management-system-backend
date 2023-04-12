@@ -8,8 +8,9 @@ namespace backend.Core.AutoMapperConfig
 	{
         public AutoMapperConfigProfile()
         {
-            // Company
-            CreateMap<CompanyCreateDto, Company>();
+            /* convert company to company create dto and compnay create dto to company */
+            CreateMap<Company, CompanyCreateDto>().ReverseMap();
+            CreateMap<Company, CompanyGetDto>().ReverseMap();
 
             // Job
 
