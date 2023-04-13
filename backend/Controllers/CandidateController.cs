@@ -23,9 +23,26 @@ namespace backend.Controllers
 
 		[HttpPost]
 		[Route("create")]
-		public async Task<IActionResult> CreateCandidate([FromBody] CandidateCreateDto candidate)
+		public async Task<IActionResult> CreateCandidate([FromForm] CandidateCreateDto candidate, IFormFile pdf)
 		{
+			var fiveMegaByte = 5 * 1024 * 1024;
+			var pdfType = "application/pdf";
+
+			if (pdf.Length > fiveMegaByte || pdf.ContentType != pdfType)
+			{
+				return BadRequest("Invalid file");
+			}
+
+			var resumeUrl = Guid.NewGuid().ToString() + ".pdf";
+			var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Documents", "Pdf", resumeUrl);
+
+			using (var stream = new FileStream(filePath, FileMode.Create))
+			{
+				await pdf.CopyToAsync(stream);
+			}
+
 			var newCandidate = _mapper.Map<Candidate>(candidate);
+			newCandidate.ResumeUrl = resumeUrl;
 			await _context.Candidates.AddAsync(newCandidate);
 			await _context.SaveChangesAsync();
 
@@ -42,6 +59,22 @@ namespace backend.Controllers
 			return Ok(convertedCandidates);
 		}
 
+		[HttpGet]
+		[Route("download/{url}")]
+		public IActionResult DownloadPdfFile(string url)
+		{
+			var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Documents", "Pdf", url);
+
+			if (!System.IO.File.Exists(filePath))
+			{
+				return NotFound("File does not exist");
+			}
+
+			var pdfBytes = System.IO.File.ReadAllBytes(filePath);
+			var file = File(pdfBytes, "application/pdf", url);
+			return file;
+
+		}
 
 	}
 }

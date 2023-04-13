@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <Folder Include="Core\Dtos\Job\" />
+    <Folder Include="Documents\Pdf\" />
   </ItemGroup>
 
 </Project>
