@@ -4,6 +4,7 @@ using backend.Core.Dtos.Candidate;
 using backend.Core.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Controllers
 {
@@ -30,5 +31,17 @@ namespace backend.Controllers
 
 			return Ok("Candidate Created Successfully");
 		}
+
+		[HttpGet]
+		[Route("get")]
+		public async Task<ActionResult<IEnumerable<CandidateGetDto>>> GetCandidates()
+		{
+			var candidates = await _context.Candidates.Include(candidate => candidate.Job).ToListAsync();
+			var convertedCandidates = _mapper.Map<IEnumerable<CandidateGetDto>>(candidates);
+
+			return Ok(convertedCandidates);
+		}
+
+
 	}
 }
