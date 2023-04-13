@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using backend.Core.Context;
+using backend.Core.Dtos.Company;
 using backend.Core.Dtos.Job;
 using backend.Core.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Controllers
 {
@@ -31,7 +33,15 @@ namespace backend.Controllers
 			return Ok("Job Created Sucessfully");
 		}
 
+		[HttpGet]
+		[Route("get")]
+		public async Task<ActionResult<IEnumerable<JobGetDto>>> GetJobs()
+		{
+			var jobs = await _context.Jobs.Include(job => job.Company).ToListAsync();
+			var convertedJobs = _mapper.Map<IEnumerable<JobGetDto>>(jobs);
 
+			return Ok(convertedJobs);
+		}
 
 	}
 }

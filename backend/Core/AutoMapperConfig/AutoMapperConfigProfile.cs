@@ -15,7 +15,10 @@ namespace backend.Core.AutoMapperConfig
 
 			// Job
 			CreateMap<Job, JobCreateDto>().ReverseMap();
-			CreateMap<Job, JobGetDto>().ReverseMap();
+			// CreateMap<Job, JobGetDto>().ReverseMap();
+			CreateMap<Job, JobGetDto>()
+				.ForMember(dest => dest.CompanyName, opt => opt.MapFrom(src => src.Company.Name))
+				.ReverseMap();
 
 			// Candidate
 
