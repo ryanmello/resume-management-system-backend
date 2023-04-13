@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using backend.Core.Dtos.Company;
+using backend.Core.Dtos.Job;
 using backend.Core.Entities;
 
 namespace backend.Core.AutoMapperConfig
@@ -12,11 +13,12 @@ namespace backend.Core.AutoMapperConfig
             CreateMap<Company, CompanyCreateDto>().ReverseMap();
             CreateMap<Company, CompanyGetDto>().ReverseMap();
 
-            // Job
+			// Job
+			CreateMap<Job, JobCreateDto>().ReverseMap();
+			CreateMap<Job, JobGetDto>().ReverseMap();
 
+			// Candidate
 
-            // Candidate
-
-        }
-    }
+		}
+	}
 }
