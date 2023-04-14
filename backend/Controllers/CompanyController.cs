@@ -45,9 +45,54 @@ namespace backend.Controllers
 		}
 
 		// get company by id
+		[HttpGet]
+		[Route("get/{id}")]
+		public async Task<ActionResult<CompanyGetDto>> GetCompanyById(long id)
+		{
+			var company = await _context.Companies.FindAsync(id);
+			var convertedCompany = _mapper.Map<CompanyGetDto>(company);
+			if (convertedCompany == null)
+			{
+				return NotFound("Invalid id input");
+			}
+			return Ok(convertedCompany);
+		}
 
 		// update company by id
+		[HttpPut]
+		[Route("edit/{id}")]
+		public async Task<ActionResult<CompanyGetDto>> EditCompanyById(long id, [FromBody] CompanyCreateDto company)
+		{
+			var currentCompany = await _context.Companies.FindAsync(id);
+			if(currentCompany is null)
+			{
+				return NotFound("Invalid id");
+			}
+
+			currentCompany.Name = company.Name;
+			currentCompany.Size = company.Size;
+			currentCompany.UpdatedAt = DateTime.Now;
+
+			await _context.SaveChangesAsync();
+
+			return Ok(currentCompany);
+		}
 
 		// delete company by id
+		[HttpDelete]
+		[Route("delete")]
+		public async Task<ActionResult> DeleteCompanyById(long id)
+		{
+			var company = await _context.Companies.FindAsync(id);
+			if (company is null)
+			{
+				return NotFound("Company not found");
+			}
+
+			_context.Companies.Remove(company);
+			await _context.SaveChangesAsync();
+
+			return Ok("Contact deleted sucessfully");
+		}
 	}
 }
