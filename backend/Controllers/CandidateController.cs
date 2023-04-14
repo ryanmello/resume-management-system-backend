@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using backend.Core.Context;
 using backend.Core.Dtos.Candidate;
+using backend.Core.Dtos.Company;
 using backend.Core.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -74,6 +75,61 @@ namespace backend.Controllers
 			var file = File(pdfBytes, "application/pdf", url);
 			return file;
 
+		}
+
+		// get candidate by id
+		[HttpGet]
+		[Route("get/{id}")]
+		public async Task<ActionResult<CandidateGetDto>> GetCandidateById(long id)
+		{
+			var candidate = await _context.Candidates.FindAsync(id);
+			var convertedCandidate = _mapper.Map<CandidateGetDto>(candidate);
+			if (convertedCandidate == null)
+			{
+				return NotFound("Invalid id input");
+			}
+			return Ok(convertedCandidate);
+		}
+
+		// update candidate by id
+		[HttpPut]
+		[Route("edit/{id}")]
+		public async Task<ActionResult<CandidateGetDto>> EditCompanyById(long id, [FromBody] CandidateCreateDto candidate)
+		{
+			var currentCandidate = await _context.Candidates.FindAsync(id);
+			if (currentCandidate is null)
+			{
+				return NotFound("Invalid id");
+			}
+
+			currentCandidate.FirstName = candidate.FirstName;
+			currentCandidate.LastName = candidate.LastName;
+			currentCandidate.Email = candidate.Email;
+			currentCandidate.Phone = candidate.Phone;	
+			currentCandidate.CoverLetter = candidate.CoverLetter;
+			currentCandidate.JobId = candidate.JobId;
+			currentCandidate.UpdatedAt = DateTime.Now;
+
+			await _context.SaveChangesAsync();
+
+			return Ok(currentCandidate);
+		}
+
+		// delete candidate by id
+		[HttpDelete]
+		[Route("delete")]
+		public async Task<ActionResult> DeleteCandidateById(long id)
+		{
+			var candidate = await _context.Candidates.FindAsync(id);
+			if (candidate is null)
+			{
+				return NotFound("Candidate not found");
+			}
+
+			_context.Candidates.Remove(candidate);
+			await _context.SaveChangesAsync();
+
+			return Ok("Candidate deleted sucessfully");
 		}
 
 	}

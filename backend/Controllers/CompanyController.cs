@@ -92,7 +92,7 @@ namespace backend.Controllers
 			_context.Companies.Remove(company);
 			await _context.SaveChangesAsync();
 
-			return Ok("Contact deleted sucessfully");
+			return Ok("Company deleted sucessfully");
 		}
 	}
 }

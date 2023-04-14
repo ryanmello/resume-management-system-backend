@@ -6,6 +6,7 @@ using backend.Core.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace backend.Controllers
 {
@@ -43,5 +44,56 @@ namespace backend.Controllers
 			return Ok(convertedJobs);
 		}
 
+		// get job by id
+		[HttpGet]
+		[Route("get/{id}")]
+		public async Task<ActionResult<JobGetDto>> GetJobById(long id)
+		{
+			var job = await _context.Jobs.FindAsync(id);
+			var convertedJob = _mapper.Map<JobGetDto>(job);
+			if (convertedJob == null)
+			{
+				return NotFound("Invalid id input");
+			}
+			return Ok(convertedJob);
+		}
+
+		// update company by id
+		[HttpPut]
+		[Route("edit/{id}")]
+		public async Task<ActionResult<JobGetDto>> EditJobById(long id, [FromBody] JobCreateDto job)
+		{
+			var currentJob = await _context.Jobs.FindAsync(id);
+			if (currentJob is null)
+			{
+				return NotFound("Invalid id");
+			}
+
+			currentJob.Title = job.Title;
+			currentJob.Level = job.Level;
+			currentJob.CompanyId = job.CompanyId;
+			currentJob.UpdatedAt = DateTime.Now;
+
+			await _context.SaveChangesAsync();
+
+			return Ok(currentJob);
+		}
+
+		// delete company by id
+		[HttpDelete]
+		[Route("delete")]
+		public async Task<ActionResult> DeleteJobById(long id)
+		{
+			var job = await _context.Jobs.FindAsync(id);
+			if (job is null)
+			{
+				return NotFound("Job not found");
+			}
+
+			_context.Jobs.Remove(job);
+			await _context.SaveChangesAsync();
+
+			return Ok("Company deleted sucessfully");
+		}
 	}
 }
